@@ -9,6 +9,7 @@ import (
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
 	"net"
+	"time"
 )
 
 // NetFace is a small struct made to make storing the source IP
@@ -38,7 +39,6 @@ func GetPCAPFile(fileName string) (*pcap.Handle, error) {
 // so that it can be analysed accordingly
 func SetBPFFilter(handle *pcap.Handle, filter string) error {
 	err := handle.SetBPFFilter(filter)
-
 	return err
 
 }
@@ -80,6 +80,15 @@ func GetDestinationPort(packet gopacket.Packet) (layers.TCPPort, error) {
 	port = tcp.DstPort
 
 	return port, nil
+}
+
+// AddDataToCache inserts an IP and Port, which are specificed by the parameters, to the cache
+func AddDataToCache(IP net.IP, Port layers.TCPPort, c *Cache) bool {
+	IPHash := GetIPHash(IP.String())
+	dataInfo := NetFace{IP, Port}
+
+	err := c.AddItem(IPHash, dataInfo, 5*time.Minute)
+	return err
 }
 
 // GetSrcIP reads the layers in the packet
