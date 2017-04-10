@@ -1,0 +1,14 @@
+language: go
+
+
+go: 
+  - 1.8
+  
+
+before_install: 
+  - sudo apt-get install libpcap-dev 
+
+
+sudo: required
+
+script: sudo -E env "PATH=$PATH" go test -v ./...
