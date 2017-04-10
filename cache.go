@@ -62,7 +62,6 @@ func CreateNewCache() *Cache {
 
 // GetItem checks the cache whether an item exists already or not. If not, it returns nil
 // if the item exists, it returns the item.
-
 func (c *Cache) GetItem(itemName string) interface{} {
 
 	c.lock.RLock()
@@ -76,7 +75,6 @@ func (c *Cache) GetItem(itemName string) interface{} {
 }
 
 // AddItem adds an item to the cache with an expiration time
-
 func (c *Cache) AddItem(hash string, item NetFace, expiration time.Duration) bool {
 	// check if that item exists or not
 	itemExists := c.GetItem(hash)
@@ -96,7 +94,6 @@ func (c *Cache) AddItem(hash string, item NetFace, expiration time.Duration) boo
 }
 
 // DeleteExpired deletes all the expired items in the cache
-
 func (c *Cache) DeleteExpired() {
 	c.lock.Lock()
 	defer c.lock.Unlock()
