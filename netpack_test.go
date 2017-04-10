@@ -53,6 +53,15 @@ func TestCachePCAP(t *testing.T) {
 	// this displays all the cached items
 	cachedItems := c.GetAllItems()
 	t.Log(cachedItems)
+
+	// Add a new item to test the AddDataToCache method
+	testIP := net.ParseIP("127.0.0.1")
+	addItem := AddDataToCache(testIP, 443, c)
+	if addItem != true {
+		t.Logf(" Could not add IP and Port to cache")
+	} else {
+		t.Logf(" External data was added to cache")
+	}
 	// sleep current goroutine for 5 seconds, to test the caching mechanism
 	// after 5 seconds, the cache map should be empty.
 	time.Sleep(5 * time.Second)
