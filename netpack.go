@@ -9,10 +9,8 @@ import (
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
 	"net"
-
-
-
 )
+
 // NetFace is a small struct made to make storing the source IP
 // and the destination port in the cache easier.
 type NetFace struct {
@@ -36,16 +34,16 @@ func GetPCAPFile(fileName string) (*pcap.Handle, error) {
 	return handle, nil
 }
 
-// GetBPFFilter sets the BPF filter for a connection ( packet capture or network stream )
+// SetBPFFilter sets the BPF filter for a connection ( packet capture or network stream )
 // so that it can be analysed accordingly
 func SetBPFFilter(handle *pcap.Handle, filter string) error {
 	err := handle.SetBPFFilter(filter)
-	
+
 	return err
 
 }
 
-// GetpacketStream retrieves the stream of packets from
+// GetPacketStream retrieves the stream of packets from
 // the packet capture
 func GetPacketStream(handle *pcap.Handle) chan gopacket.Packet {
 	stream := gopacket.NewPacketSource(handle, handle.LinkType())
@@ -125,7 +123,7 @@ func GetIPHash(text string) string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-// GetCurrentNetworKDevices lists all the network devices in the current environment and
+// GetCurrentNetworkDevice lists all the network devices in the current environment and
 // retrieves the name of the first one and returns it.
 func GetCurrentNetworkDevice() (string, error) {
 	devices, err := pcap.FindAllDevs()
@@ -154,5 +152,3 @@ func GetNetworkStream(device string) (*pcap.Handle, error) {
 
 	return pcapHandle, nil
 }
-
-

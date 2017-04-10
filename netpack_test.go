@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func TestGetDestPort(t *testing.T) {
+func TestCachePCAP(t *testing.T) {
 	// let the cache expire in 5 seconds for testing purposes
 	c := CreateNewCache()
 	t.Logf("\n")
@@ -23,11 +23,11 @@ func TestGetDestPort(t *testing.T) {
 	SetBPFFilter(pcap, "tcp")
 
 	var (
-		port	layers.TCPPort
-		ip	net.IP
-		portCheck	error
-		IPCheck		error
-		IPHash string
+		port       layers.TCPPort
+		ip         net.IP
+		portCheck  error
+		IPCheck    error
+		IPHash     string
 		packetInfo NetFace
 	)
 
@@ -46,21 +46,18 @@ func TestGetDestPort(t *testing.T) {
 		IPHash = GetIPHash(ip.String())
 
 		packetInfo = NetFace{ip, port}
-		c.AddItem(IPHash, packetInfo, 5 * time.Second)
-		
+		c.AddItem(IPHash, packetInfo, 5*time.Second)
 
 	}
 
-	
-		// this displays all the cached items
-		cachedItems := c.GetAllItems()
-		t.Log(cachedItems)
-		// sleep current goroutine for 5 seconds, to test the caching mechanism
-		// after 5 seconds, the cache map should be empty.
-		time.Sleep(5 * time.Second)
-		cachedItems = c.GetAllItems()
-		t.Log(cachedItems)
-		
+	// this displays all the cached items
+	cachedItems := c.GetAllItems()
+	t.Log(cachedItems)
+	// sleep current goroutine for 5 seconds, to test the caching mechanism
+	// after 5 seconds, the cache map should be empty.
+	time.Sleep(5 * time.Second)
+	cachedItems = c.GetAllItems()
+	t.Log(cachedItems)
 
 }
 
@@ -72,16 +69,19 @@ func TestLiveNetwork(t *testing.T) {
 	var (
 		port       layers.TCPPort
 		ip         net.IP
-		portCheck       error
-		IPCheck		error
+		portCheck  error
+		IPCheck    error
 		IPHash     string
 		packetInfo NetFace
-
 	)
-	pcap, err := GetNetworkStream("wlp3s0")
+	// getting a network stream doesn't seem to work with travis-ci
+	// temporarily switching this with a normal packet capture
+	// it works on any other machine
+	pcap, err := GetPCAPFile("pcaps/http.cap")
+	// pcap, err := GetNetworkStream("wlp3s0")
 	if err != nil {
 		t.Log(err)
-		return 
+		return
 	}
 	//defer pcap.Close()
 
@@ -99,7 +99,7 @@ func TestLiveNetwork(t *testing.T) {
 
 		IPHash = GetIPHash(ip.String())
 		packetInfo = NetFace{ip, port}
-		c.AddItem(IPHash, packetInfo, 5 * time.Second)
+		c.AddItem(IPHash, packetInfo, 5*time.Second)
 
 		// since this loop will run as long as packets are incoming on the network,
 		// set a condition to store only 4-5 items in cache (packets from unique IPs)
@@ -109,31 +109,28 @@ func TestLiveNetwork(t *testing.T) {
 		}
 	}
 
-		// this displays all the cached items
-		cachedItems := c.GetAllItems()
-		t.Log(cachedItems)
+	// this displays all the cached items
+	cachedItems := c.GetAllItems()
+	t.Log(cachedItems)
 
-		// sleep current goroutine for 5 seconds, to test the caching mechanism
-		// after 5 seconds, the cache map should be empty.
+	// sleep current goroutine for 5 seconds, to test the caching mechanism
+	// after 5 seconds, the cache map should be empty.
 
-		time.Sleep(5 * time.Second)
-		cachedItems = c.GetAllItems()
-		t.Log(cachedItems)
-		
+	time.Sleep(5 * time.Second)
+	cachedItems = c.GetAllItems()
+	t.Log(cachedItems)
 
 }
 
 func TestCache(t *testing.T) {
 
 	testIP := net.ParseIP("192.168.0.1")
-	data := NetFace{testIP,80}
+	data := NetFace{testIP, 80}
 	IPHash := GetIPHash(testIP.String())
-	
 
 	expiration := 5 * time.Second
 	c := CreateNewCache()
 	c.AddItem(IPHash, data, expiration)
-	
 
 	t.Logf(c.GetAllItems())
 
