@@ -113,6 +113,15 @@ func GetSrcIP(packet gopacket.Packet) (net.IP, error) {
 	return IP, nil
 }
 
+// AddDataToCache inserts an IP and Port, which are specificed by the parameters, to the cache
+func AddDataToCache(IP net.IP, Port layers.TCPPort, c *Cache) bool {
+	IPHash := GetIPHash(IP.String())
+	dataInfo := NetFace{IP, Port}
+
+	err := c.AddItem(IPHash, dataInfo, 5*time.Minute)
+	return err
+}
+
 // GetIPHash returns the md5 hash value of a string - for caching purposes
 func GetIPHash(text string) string {
 	hasher := md5.New()
