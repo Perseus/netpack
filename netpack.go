@@ -9,6 +9,7 @@ import (
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
 	"net"
+	"time"
 )
 
 // NetFace is a small struct made to make storing the source IP
